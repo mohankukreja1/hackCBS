@@ -4,54 +4,17 @@ const router=express.Router();
 const bcrypt = require('bcrypt-nodejs');
 var fs = require('fs');
 var doctor = require('../db/user').doctor;
+var patient = require('../db/user').patient;
 const passport=require('passport');
 
 
-router.post('/patient',function(req,res){
-    console.log(req);
-    var ans = req.body.gender+','+req.body.age+','+req.body.cigsday+','+req.body.bpmeds+','+req.body.prevelant_strokes+','+req.body.diabetes+','+req.body.totchol+','+req.body.bmi+','+req.body.hRate+','+req.body.glucose;
-
-    fs.writeFile(path.resolve(__dirname, "../frontendWithLogin/test.txt"), ans, function(err) {
-        if(err) {
-            return console.log(err);
-        }
-    
-        console.log("The file was saved!");
-        res.redirect('/user-login')
-    }); 
-})
-router.get('/data',function(req,res){
-    var ans = req.user.firstname + " " + req.user.lastname;
-    res.json(ans);
-})
-router.get('/logout',function (req,res) {
+router.post('/logout',function (req,res) {
 
     req.logout();
     res.redirect('/');
 })
 
-router.get('/sendmail',isUser,function(req,res){
-    //console.log(req.user);
-    var data = fs.readFileSync(path.resolve(__dirname, "../frontendWithLogin/result.txt"));
-    var ans =data.toString(); 
-    console.log(ans);
 
-    var mailOptions = {
-        from: 'deepakalpha11@gmail.com',
-        to: `jasmeetsingh585@gmail.com`,
-        subject:'tu chu hai',
-        text: `${ans}`
-    };
-
-    transporter.sendMail(mailOptions, function(error, info){
-        if (error) {
-            console.log(error);
-        } else {
-            console.log('Email sent: ' + info.response);
-            res.redirect('/user-login');
-        }
-    })
-})
 
 
 
@@ -84,8 +47,27 @@ router.post('/login', passport.authenticate('user.login',{
 
 }),function (req,res) {
     console.log(req);
+    
 	res.redirect('/user-login');
 })
+
+
+router.post('/login-app', function(req, res, next) {
+    passport.authenticate('user.login', function(err, user, info) {
+      if (err) { return next(err); }
+      if (!user) { 
+          return res.send({message : 'Invalid username and password',
+                    code : 1})
+          
+      }
+      req.logIn(user, function(err) {
+        if (err) { throw err }
+        return res.send({message : 'Login Successfull',
+        code : 2})
+      });
+    })(req, res, next);
+  });
+
 
 router.post('/doctor-signup', function(req,res){
     console.log(req);
@@ -115,7 +97,7 @@ router.post('/doctor-signup', function(req,res){
 		})
 	})
 
-    })
+})
     
     function isUser(req,res,next){
         if(!req.user){
