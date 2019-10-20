@@ -48,7 +48,7 @@ router.post('/login', passport.authenticate('user.login',{
 }),function (req,res) {
     console.log(req);
     
-	res.redirect('templates/view_appointment.html');
+	res.redirect('templates/frontpage.html');
 })
 
 
@@ -88,10 +88,10 @@ router.post('/login-app', function(req, res, next) {
     })
     })
 
-  router.post('/rfid',function(req,res){
+  router.get('/rfid',function(req,res){
       //console.log(req);
       console.log(req);
-       patient.findOne({rf_id : req.body.Rfid},function(err,data){
+       patient.findOne({rf_id : "3920E76E"},function(err,data){
            console.log(data);
             if(err){
                 throw err;
@@ -110,8 +110,15 @@ router.post('/login-app', function(req, res, next) {
   router.get('/data',function(req,res){
       res.send(obj);
   })
-  router.get('/ret', function(){
-        
+  router.get('/ret', function(req,res){
+      console.log(req);
+        if(1){
+            res.redirect('/templates/patient_profile.html')
+        }
+        else{
+            res.redirect('/templates/patientnotfound.html')
+        }
+
   })
 
 router.post('/doctor-signup', function(req,res){
