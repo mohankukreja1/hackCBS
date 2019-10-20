@@ -40,6 +40,10 @@ var prescriptionSchema = mongoose.Schema({
         type: String,
         default : null
     },
+    date:{
+        type:String,
+	    default: null
+    },
     information:{
         type:String,
 	    default: null
@@ -88,6 +92,8 @@ var patientSchema = mongoose.Schema({
 
 
 
+
+
 doctorSchema.methods.encryptPassword=function (password) {
     return bcrypt.hashSync(password,bcrypt.genSaltSync(10),null);
 }
@@ -95,6 +101,8 @@ doctorSchema.methods.encryptPassword=function (password) {
 doctorSchema.methods.validPassword = function (password) {
     return bcrypt.compareSync(password,this.password);
 }
+
+
 var obj = {};
 obj.prescription = mongoose.model('prescription',prescriptionSchema);
 obj.patient = mongoose.model('patient',patientSchema);

@@ -5,6 +5,7 @@ const bcrypt = require('bcrypt-nodejs');
 var fs = require('fs');
 var doctor = require('../db/user').doctor;
 var patient = require('../db/user').patient;
+var prescription = require('../db/user').prescription;
 const passport=require('passport');
 var obj = {};
 
@@ -107,6 +108,21 @@ router.post('/login-app', function(req, res, next) {
             code : 2})
         })
   })
+
+  router.post('/add-prescription', function(req,res){
+    var newUser=new prescription(); 
+    
+    newUser.patientid  = obj._id;
+    newUser.doctorid = req.user.id;
+    newUser.date = new Date();
+    newUser.information = req.body.information;
+   
+    newUser.save(function (err) {
+        if(err) throw (err);
+
+        return res.redirect('/templates/patient_profile.html');
+    })
+})
   router.get('/data',function(req,res){
       res.send(obj);
   })
