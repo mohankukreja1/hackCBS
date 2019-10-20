@@ -75,6 +75,10 @@ var patientSchema = mongoose.Schema({
     livelihood:{
         type:String,
 		default: null
+    },
+    rf_id:{
+        type:String,
+		default: null
     }
     
     

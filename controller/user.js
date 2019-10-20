@@ -6,7 +6,7 @@ var fs = require('fs');
 var doctor = require('../db/user').doctor;
 var patient = require('../db/user').patient;
 const passport=require('passport');
-
+var obj = {};
 
 router.post('/logout',function (req,res) {
 
@@ -48,7 +48,7 @@ router.post('/login', passport.authenticate('user.login',{
 }),function (req,res) {
     console.log(req);
     
-	res.redirect('/user-login');
+	res.redirect('templates/view_appointment.html');
 })
 
 
@@ -68,6 +68,51 @@ router.post('/login-app', function(req, res, next) {
     })(req, res, next);
   });
 
+  router.post('/add-data',function(req,res){
+    //console.log(req);
+    var newUser=new patient();
+	
+    newUser.firstname  = req.body.firstname;
+    newUser.lastname = req.body.lastname;
+    
+    newUser.email=req.body.email;
+    newUser.phone=req.body.phone;
+    newUser.gender=req.body.gender;
+    newUser.bloodgroup=req.body.bloodgroup;
+    newUser.livelihood=req.body.livelihood;
+    newUser.rf_id=req.body.rf_id;
+    newUser.save(function (err) {
+        if(err) throw (err);
+
+        return res.redirect('/');
+    })
+    })
+
+  router.post('/rfid',function(req,res){
+      //console.log(req);
+      console.log(req);
+       patient.findOne({rf_id : req.body.Rfid},function(err,data){
+           console.log(data);
+            if(err){
+                throw err;
+            }
+            if(!data){
+                //failedrf(req,res);
+                return res.send({message : 'failed ',
+                code : 1})
+            }
+            
+            obj = data._doc;
+            res.send({message : 'Successfull',
+            code : 2})
+        })
+  })
+  router.get('/data',function(req,res){
+      res.send(obj);
+  })
+  router.get('/ret', function(){
+        
+  })
 
 router.post('/doctor-signup', function(req,res){
     console.log(req);
@@ -104,6 +149,11 @@ router.post('/doctor-signup', function(req,res){
             return res.redirect('/login.html')
         }
         return next();
+    }
+    function failedrf(req,res){
+        setTimeout(() => {
+            res.redirect('/')
+          }, 5000)
     }
 
 module.exports = router;
